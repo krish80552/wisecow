@@ -34,6 +34,8 @@ jobs:
              
           fi
       - name: Building the image
-        run: docker build -t ${IMAGE_NAME} .
+        run: 
+          ls
+          docker build -t ${IMAGE_NAME} .
       - name: Run Docker Container
         run: docker run -d -p 4499:4499 ${IMAGE_NAME}
