@@ -1,0 +1,37 @@
+name: Build and Run Container Cowsay
+
+on:
+  push:
+    branches:
+      - main
+      
+env:
+    IMAGE_NAME: my-image
+
+jobs:
+  build-and-run-container:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stop and Remove Existing Container
+        run: |
+          CONTAINER_ID=$(docker ps --filter "ancestor=${IMAGE_NAME}" --format "{{.ID}}")
+          if [ "${CONTAINER_ID}" ]; then
+              docker stop ${CONTAINER_ID}
+              docker rm ${CONTAINER_ID}
+          else
+            echo "No container running on image ${IMAGE_NAME}, proceeding to build the image"
+          fi
+      - name: Deleting the image chache and building the image
+        run: |
+          image_id=$(docker images --quiet "${IMAGE_NAME}")
+          if [[ -n "$image_id" ]]; then
+            echo "**********IMAGE ALREADY EXISTS CLEARING THE BUILD CHACHE*************"
+            docker builder prune --force --filter="label=${IMAGE_NAME}"
+          else
+             echo "The $image_name image is not found. proceeding to build the image"
+             
+          fi
+      - name: Building the image
+        run: docker build -t ${IMAGE_NAME} .
+      - name: Run Docker Container
+        run: docker run -d -p 4499:4499 ${IMAGE_NAME}
