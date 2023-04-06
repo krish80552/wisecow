@@ -25,6 +25,7 @@ echo "fortune output: $mod" >&2
     cat <<EOF > $RSPFILE
 HTTP/1.1 200 OK
 Content-Type: text/html
+
 <pre>$cowsay_output</pre>
 EOF
 }
