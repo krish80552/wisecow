@@ -6,7 +6,7 @@ on:
       - main
       
 env:
-    IMAGE_NAME: my-image
+    IMAGE_NAME: wisecow
 
 jobs:
   build-and-run-container:
@@ -14,34 +14,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Stop and Remove Existing Container
+      - name: Set environment variables
         run: |
-          CONTAINER_ID=$(docker ps --filter "ancestor=${IMAGE_NAME}" --format "{{.ID}}")
-          if [ "${CONTAINER_ID}" ]; then
-              docker stop ${CONTAINER_ID}
-              docker rm ${CONTAINER_ID}
-          else
-            echo "No container running on image ${IMAGE_NAME}, proceeding to build the image"
-          fi
-      - name: Deleting the image chache and building the image
-        run: |
-          image_id=$(docker images --quiet "${IMAGE_NAME}")
-          if [[ -n "$image_id" ]]; then
-            echo "**********IMAGE ALREADY EXISTS CLEARING THE BUILD CHACHE*************"
-            docker builder prune --force --filter="label=${IMAGE_NAME}"
-          else
-             echo "The $image_name image is not found. proceeding to build the image"  
-          fi
+          COMMIT_HASH=${{ github.sha }}
+          LAST_4_DIGITS=$(echo $COMMIT_HASH | cut -c 1-4)
+          echo "LAST_4_DIGITS=$LAST_4_DIGITS" >> $GITHUB_ENV
       - name: Building the image
         run: |
           ls -altr
-          docker build -t ${IMAGE_NAME}:latest .
+          docker build -t ${IMAGE_NAME}:${LAST_4_DIGITS} .
       - name: Login to Docker Hub
         run: docker login --username 80552 --password ${{ secrets.DOCKER_PASSWORD }}
       - name: Pushing it to the docker registry
         run: |
-          docker tag ${IMAGE_NAME}:latest 80552/my-image:latest
-          docker push 80552/my-image:latest
+          docker tag ${IMAGE_NAME}:${LAST_4_DIGITS} 80552/${IMAGE_NAME}:${LAST_4_DIGITS}
+          docker push 80552/${IMAGE_NAME}:${LAST_4_DIGITS}
           
           
           
