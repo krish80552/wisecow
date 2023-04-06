@@ -12,6 +12,8 @@ jobs:
   build-and-run-container:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: Stop and Remove Existing Container
         run: |
           CONTAINER_ID=$(docker ps --filter "ancestor=${IMAGE_NAME}" --format "{{.ID}}")
