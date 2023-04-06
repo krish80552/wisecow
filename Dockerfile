@@ -8,5 +8,4 @@ COPY winescow.sh /usr/local/bin/winescow.sh
 RUN chmod +x /usr/local/bin/winescow.sh
 
 EXPOSE 4499
-
 CMD ["/usr/local/bin/winescow.sh"]
