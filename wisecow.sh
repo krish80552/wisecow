@@ -16,11 +16,16 @@ handleRequest() {
 	get_api
 	mod=`fortune`
 
-cat <<EOF > $RSPFILE
-HTTP/1.1 200
+echo "fortune output: $mod" >&2
 
+    # 2) Generate the response
+    cowsay_output=$(cowsay "$mod")
+    echo "cowsay output: $cowsay_output" >&2
 
-<pre>`cowsay $mod`</pre>
+    cat <<EOF > $RSPFILE
+HTTP/1.1 200 OK
+Content-Type: text/html
+<pre>$cowsay_output</pre>
 EOF
 }
 
@@ -36,7 +41,6 @@ prerequisites() {
 main() {
 	prerequisites
 	echo "Wisdom served on port=$SRVPORT..."
-
 	while [ 1 ]; do
 		cat $RSPFILE | nc -lN $SRVPORT | handleRequest
 		sleep 0.01
