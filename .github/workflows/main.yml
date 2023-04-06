@@ -18,7 +18,7 @@ jobs:
         run: |
           COMMIT_HASH=${{ github.sha }}
           LAST_7_DIGITS=$(echo $COMMIT_HASH | cut -c 1-7)
-          echo "LAST_7_DIGITS=$LAST_4_DIGITS" >> $GITHUB_ENV
+          echo "LAST_7_DIGITS=$LAST_7_DIGITS" >> $GITHUB_ENV
       - name: Building the image
         run: |
           ls -altr
